@@ -17,12 +17,17 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 matplotlib.use('TkAgg')
 from collections import deque
+from matplotlib.ticker import LinearLocator
+from matplotlib.ticker import FixedLocator
+
 delay_pu=[]
 act_time=[]
 data_one=[]
 
 fig=plt.figure()
 ax=fig.add_subplot(1,1,1)
+#ax=fig.add_subplot()
+
 
 def animate(i):
     with open('text.txt', 'r') as f:
@@ -43,12 +48,19 @@ def animate(i):
         #print(y)
         xs.append(x)
         #print(xs)
-        ys.append(y)
+        ys.append(int(y))
         #print(ys)
     ax.clear()
-    ax.plot(xs,ys)
-    plt.xticks(rotation=90)
 
+
+    ax.plot(xs,ys)
+
+    plt.xticks(rotation=90)
+    plt.yticks(rotation=90)
+
+    #ax.yaxis.set_major_locator(LinearLocator(5))
+    #ax.yaxis.set_major_locator(FixedLocator([0, 2, 4, 6, 8, 10]))
+    plt.ylim(0, 10)
     plt.xlabel('Время')
     plt.ylabel('Параметр')
     plt.title('График')
