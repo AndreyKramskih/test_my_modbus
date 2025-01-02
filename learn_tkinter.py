@@ -17,6 +17,11 @@ def entered(event):
 def lefted(event):
     btn['text']='Убрал'
 
+def click_new_wd():
+    window=Tk()
+    window.title('Новое окно')
+    window.geometry('300x300')
+
 root=Tk()
 root.title('Приложение')
 root.geometry('400x400+200+200')
@@ -34,5 +39,8 @@ btn=Button(text='Жми', command=click_button)
 btn.place(x=20,y=20)
 btn.bind('<Enter>', entered)
 btn.bind('<Leave>', lefted)
+
+btn_new_wd=Button(text='Новое окно', command=click_new_wd)
+btn_new_wd.place(x=20, y=40)
 
 root.mainloop()
