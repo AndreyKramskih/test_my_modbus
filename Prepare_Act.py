@@ -17,9 +17,9 @@ def safe_act():
         document.save(filepath)
 
 def open_table():
-    path=filedialog.askopenfilename()
-    if path !="":
-        table_path = filedialog.askopenfilename()
+    table_path=filedialog.askopenfilename()
+    if table_path !="":
+
         #wb = openpyxl.load_workbook(table_path)
         #sheet=wb.active
         #val=str(sheet['A1'].value)
@@ -27,12 +27,33 @@ def open_table():
         #df = pd.read_excel(table_path, sheet_name='Table 1', index_col=0, skiprows=2)
 
         df = pd.read_excel(table_path, sheet_name='Table 1', skiprows=2)
-        print(df.head())
-        print(len(df.index))
-        print(df.columns)
-        print(len(df.to_numpy()))
+        df_cleaned=df.dropna()
+        print(df_cleaned.head())
+        print(len(df_cleaned.index))
+        print(df_cleaned.columns)
+        print(len(df_cleaned.to_numpy()))
         for i in range(0,5):
-            print(df.to_numpy()[i][1])
+            print(df_cleaned.to_numpy()[i])
+        xl_arr=df_cleaned.to_numpy()
+
+        xl_list=xl_arr.tolist()
+        print(xl_list[0][2])
+        print(xl_list[2])
+        j=1
+
+        for i in range(0, len(xl_arr)):
+                xl_list[i].insert(0,j)
+                j+=1
+        print(xl_list[0])
+        print(xl_list[1])
+
+        headers = ('№ ', 'Поз.', 'Наименование', 'Тип, марка\nматериал', 'Техническая\nдокументация',
+        'Завод -\nизготовитель', 'Кол-\nво,\nшт')
+
+        global document
+        #table1 = create_table(document,headers, rows)
+
+        document.add_paragraph()
 
 
 
@@ -56,17 +77,17 @@ def create_table(document, headers, rows, style='Table Grid'):
 
 document = Document()
 
-headers = ('№ ', 'Поз.', 'Наименование', 'Тип, марка\nматериал', 'Техническая\nдокументация',
-           'Завод -\nизготовитель', 'Кол-\nво,\nшт')
-records_table1 = (
-    (0, 'Nan', 'Nan', 0, 2, 3, 4),
-    (0, 'Nan', 'Nan', 0, 2, 3, 4),
-    (0, 'Nan', 'Nan', 0, 2, 3, 4),
-    (0, 'Nan', 'Nan', 0, 2, 3, 4)
-)
-table1 = create_table(document, headers, records_table1)
+#headers = ('№ ', 'Поз.', 'Наименование', 'Тип, марка\nматериал', 'Техническая\nдокументация',
+          # 'Завод -\nизготовитель', 'Кол-\nво,\nшт')
+#records_table1 = (
+    #(0, 'Nan', 'Nan', 0, 2, 3, 4),
+    #(0, 'Nan', 'Nan', 0, 2, 3, 4),
+    #(0, 'Nan', 'Nan', 0, 2, 3, 4),
+    #(0, 'Nan', 'Nan', 0, 2, 3, 4)
+#)
+#table1 = create_table(document, headers, records_table1)
 
-document.add_paragraph()
+#document.add_paragraph()
 
 #rows = [
     #[x, x, x * x] for x in range(1, 10)
