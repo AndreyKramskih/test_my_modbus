@@ -44,14 +44,15 @@ def open_table():
         for i in range(0, len(xl_arr)):
                 xl_list[i].insert(0,j)
                 j+=1
+                #print(xl_list[i])
         print(xl_list[0])
         print(xl_list[1])
 
-        headers = ('№ ', 'Поз.', 'Наименование', 'Тип, марка\nматериал', 'Техническая\nдокументация',
+        headers = ('№ ', 'Поз.', 'Наименование', 'Тип, марка\nматериал\nТехническая\nдокументация',
         'Завод -\nизготовитель', 'Кол-\nво,\nшт')
 
         global document
-        #table1 = create_table(document,headers, rows)
+        table1 = create_table(document,headers, xl_list)
 
         document.add_paragraph()
 
