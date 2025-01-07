@@ -1,3 +1,4 @@
+import numpy as np
 from docx import Document
 from docx.enum.style import WD_STYLE_TYPE
 from docx.shared import Pt, RGBColor, Cm
@@ -41,21 +42,69 @@ def open_table():
         print(xl_list[2])
         j=1
 
+
         for i in range(0, len(xl_arr)):
                 xl_list[i].insert(0,j)
                 j+=1
-                #print(xl_list[i])
-        print(xl_list[0])
-        print(xl_list[1])
+        j=1
+
+
+
+        f_list=np.empty((1,len(xl_arr.tolist()[0]))).tolist()
+        f_list.clear()
+        #print(f_list)
+        s_list = np.empty((1, len(xl_arr.tolist()[0]))).tolist()
+        s_list.clear()
+        th_list = np.empty((1, len(xl_arr.tolist()[0]))).tolist()
+        th_list.clear()
+
+        f_list += [x for x in xl_arr.tolist() if 'теплообменник' in str(x).lower()]
+        f_list += [x for x in xl_arr.tolist() if 'насос' in str(x).lower()]
+        f_list += [x for x in xl_arr.tolist() if 'регулирующий' in str(x).lower()]
+        f_list += [x for x in xl_arr.tolist() if 'регулятор давления' in str(x).lower()]
+
+        for i in range(0, len(f_list)):
+                f_list[i].insert(0,j)
+                j+=1
+        j=1
+        #print(f_list)
+        s_list += [x for x in xl_arr.tolist() if 'фильтр' in str(x).lower()]
+        s_list += [x for x in xl_arr.tolist() if 'обратный' in str(x).lower()]
+        s_list += [x for x in xl_arr.tolist() if 'вентиль' in str(x).lower()]
+        s_list += [x for x in xl_arr.tolist() if 'шаровой' in str(x).lower()]
+
+        for i in range(0, len(s_list)):
+            s_list[i].insert(0, j)
+            j += 1
+        j = 1
+
+        th_list += [x for x in xl_arr.tolist() if 'Манометр' in str(x)]
+        th_list += [x for x in xl_arr.tolist() if 'термометр' in str(x).lower()]
+        th_list += [x for x in xl_arr.tolist() if 'термостат погружной' in str(x).lower()]
+        th_list += [x for x in xl_arr.tolist() if 'датчик' in str(x).lower()]
+        th_list += [x for x in xl_arr.tolist() if 'реле' in str(x).lower()]
+        th_list += [x for x in xl_arr.tolist() if 'прессостат' in str(x).lower()]
+
+        for i in range(0, len(th_list)):
+            th_list[i].insert(0, j)
+            j += 1
+        j = 1
 
         headers = ('№ ', 'Поз.', 'Наименование', 'Тип, марка\nматериал\nТехническая\nдокументация',
-        'Завод -\nизготовитель', 'Кол-\nво,\nшт')
+                   'Завод -\nизготовитель', 'Кол-\nво,\nшт')
 
         global document
-        table1 = create_table(document,headers, xl_list)
-
+        #document.add_heading('Таблица 1')
+        #table1 = create_table(document,headers, xl_list)
+        #document.add_paragraph()
+        document.add_heading('Таблица 1')
+        table2 = create_table(document, headers, f_list)
         document.add_paragraph()
-
+        document.add_heading('Таблица 2')
+        table3 = create_table(document, headers, s_list)
+        document.add_paragraph()
+        document.add_heading('Таблица 3')
+        table4 = create_table(document, headers, th_list)
 
 
 def create_table(document, headers, rows, style='Table Grid'):
