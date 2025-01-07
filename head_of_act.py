@@ -6,16 +6,17 @@ def open_file():
     filepath=filedialog.askopenfilename()
     global document
     if filepath != "":
-        doc = Document(docx=filepath)
+        global document
+        document = Document(docx=filepath)
 
         text=[]
-        for paragraph in doc.paragraphs:
+        for paragraph in document.paragraphs:
             text.append(paragraph.text)
         print('\n'.join(text))
 
-        new_docs=doc.paragraphs.copy()
-        for new_doc in new_docs:
-            document.add_paragraph(new_doc.text)
+        #new_docs=doc.paragraphs.copy()
+        #for new_doc in new_docs:
+            #document.add_paragraph(new_doc.text)
 
 
 def save_new_file():
