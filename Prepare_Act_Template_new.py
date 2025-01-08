@@ -1,9 +1,5 @@
 from tkinter.ttk import Combobox
 import numpy as np
-from docx.enum.style import WD_STYLE_TYPE
-from docx.shared import Pt, RGBColor, Cm
-from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from tkinter import *
 from tkinter import filedialog
 from docx import Document
@@ -16,21 +12,24 @@ from tkinter.messagebox import OK, INFO, showinfo
 from tkinter import ttk
 from tkinter import font
 
+# Функция вызывающее информационное окно для напоминания о выборе нужного файла спецификации
 def open_spec():
     showinfo(title="Информация", message="Выберете спецификацию в формате xlsx")
-
+# Функция вызывающая информационное окно когда не загружена спецификация при попытке создания акта
 def make_act():
     showinfo(title="Информация", message="Проверьте что спецификация загружена!")
 
-
+# Функция создания акта
 def safe_act():
-    make_act()
+    # Проверка если спецификация была не загружена, то нет возможности создать акт
     if xl_arr.shape[0] == 1:
+        make_act()
         return
+    # Если спецификация загружена и выбран файл для сохранения акта то вы полняется код ниже
     filepath = filedialog.asksaveasfilename()
     if filepath != "" and xl_arr.shape[0]>1:
-
-
+        # Заголовки таблицы (при использовании шаблона они не нужны и используюся только для подсчета
+        # столбцов
         headers = ('№ ', 'Поз.', 'Наименование', 'Тип, марка\nматериал\nТехническая\nдокументация',
                    'Завод -\nизготовитель', 'Кол-\nво,\nшт')
 
@@ -50,30 +49,36 @@ def safe_act():
 
         # Заполнение шаблона данными
         document.render(context)
-
+        # Получение списка таблиц из файла шаблона
         all_tables = document.tables
+        # Поиск таблицы с одной строкой в шаблоне
         new_table = all_tables[0]
+        # Количество колонок таблицы
         cols_number = len(headers)
-
+        #Если выбран тип акта основное оборудование
         if type_choies.get() == 'Акт основного оборудования':
 
+            # Создается пустой список размера как список из таблицы xlsx и потом он очищается от мусора в памяти
             f_list = np.empty((1, len(xl_arr.tolist()[0]))).tolist()
             f_list.clear()
-
+            #Производится проверка полного списка по выбранным критериям и заполняется список акта основного оборудования
             f_list += [x for x in xl_arr.tolist() if 'теплообменник' in str(x).lower()]
             f_list += [x for x in xl_arr.tolist() if 'насос' in str(x).lower()]
             f_list += [x for x in xl_arr.tolist() if 'регулирующий' in str(x).lower()]
             f_list += [x for x in xl_arr.tolist() if 'регулятор давления' in str(x).lower()]
+
+            # Добавляются в список столбец номеров по порядку в начало
             j = 1
             for i in range(0, len(f_list)):
                 f_list[i].insert(0, j)
                 j += 1
             j = 1
-
+            # Заполняется таблица шаблона списком основного оборудования
             for row in f_list:
                 row_cells = new_table.add_row().cells
                 for i in range(cols_number):
                     row_cells[i].text = str(row[i])
+        # Далее аналогично двум другим выборкам
         elif type_choies.get() == 'Акт вспомогательного оборудования':
 
             s_list = np.empty((1, len(xl_arr.tolist()[0]))).tolist()
@@ -115,6 +120,7 @@ def safe_act():
                 row_cells = new_table.add_row().cells
                 for i in range(cols_number):
                     row_cells[i].text = str(row[i])
+        # Если выборки не сделано то таблица в шаблоне наполняется полным списком из спецификации
         else:
 
             xl_list = xl_arr.tolist()
@@ -132,22 +138,20 @@ def safe_act():
 
         document.save(filepath)
 
-
+#Функция открытия xlsx файла с помощью диалогового окна выбора файла в системе
 def open_table():
+    # Информационное окно напоминающее что нужно выбрать для открытия файл спецификации формата xlsx
     open_spec()
     table_path=filedialog.askopenfilename()
     global xl_arr
+    # Если файл выбран, то данные из листа с названием Table 1 читаются датафрейм пандас
     if table_path !="":
         df = pd.read_excel(table_path, sheet_name='Table 1', skiprows=2)
+        #Из датафрейма удаляются все строки содержащие пустые ячейки
         df_cleaned=df.dropna()
-        print(df_cleaned.head())
-        print(len(df_cleaned.index))
-        print(df_cleaned.columns)
-        print(len(df_cleaned.to_numpy()))
-        for i in range(0,5):
-            print(df_cleaned.to_numpy()[i])
+        # Из полученного датафрейма получаем двумерный массив средствами numpy
         xl_arr=df_cleaned.to_numpy()
-
+"""""
 def create_table(document, headers, rows, style='Table Grid'):
     cols_number = len(headers)
 
@@ -164,17 +168,25 @@ def create_table(document, headers, rows, style='Table Grid'):
             row_cells[i].text = str(row[i])
 
     return table
-
+"""
+# Создается оконное приложение
 root=Tk()
+# Заголовок
 root.title('Подготовка Актов')
-root.geometry('600x600+100+100')
+# Размер окна
+root.geometry('800x600+100+100')
+# Иконка в титуле приложения
 root.iconbitmap(default='brend.ico')
+
+# Стили
 font1 = font.Font(family= "Times New Roman", size=11, weight="bold", slant="roman", underline=False, overstrike=False)
 font2 = font.Font(family= "Times New Roman", size=11, weight="normal", slant="roman", underline=False, overstrike=False)
 
+#Текстовая метка
 name_form=Label(root, text='Заполните данные шапки акта', font=("Arial", 11, "bold"))
 name_form.place(x=20, y=20)
 
+#Поле ввода текста
 station =Entry(root, font=font1)
 station.place(x=20, y=60, width=650)
 station.insert(0,'Введите название установки')
@@ -214,13 +226,15 @@ type_acts=['Акт основного оборудования', 'Акт всп�
 # по умолчанию будет выбран первый элемент из languages
 type_var = StringVar(value=type_acts[0])
 
+# Ниспадающий список
 type_choies=Combobox(textvariable=type_var, values=type_acts, state="readonly")
 type_choies.place(x=20, y=410)
 
-
+#Кнопка открытия спецификации
 file_button=Button(text='Открыть спец', command=open_table, font=("Arial", 12, "bold"))
 file_button.place(x=400, y=20)
 
+#Кнопка создания актов
 btn=Button(text='Создать Акт', command=safe_act, font=("Arial", 12, "bold"))
 btn.place(x=400, y=400)
 
